@@ -3,7 +3,7 @@ from tkinter import *
 from carre_joueur import CarreJoueur
 from enemy import Enemy 
 from threading import Thread
-import time
+import time, random
 from espace_jeu import EspaceJeu
 
 
@@ -95,10 +95,19 @@ class GameWindow:
 # launch the game itself
 if __name__ == '__main__':
     
-    tab_enemy = [
+    tab_enemy = list()
+    for i in range(1,15):
+        x = random.randint(0, WIDTH)
+        y = random.randint(0, HEIGHT)
+        w = x + 20
+        h = y + 20
+        e = Enemy(x, y, w, h, 5, -5, "enemy"+str(i))
+        tab_enemy.append(e)
+    
+    """tab_enemy = [
         Enemy(460, 130, 480, 150, 5, 5, "enemy1"),
         Enemy(90, 90, 110, 110, -5, 5, "enemy2")
-    ]
+    ]"""
 
     g = GameWindow(tab_enemy)
     g.start()
