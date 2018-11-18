@@ -25,7 +25,7 @@ class GameWindow:
         self.root.geometry('{}x{}+{}+{}'.format(WIDTH, HEIGHT, x, y))
 
         #create the player
-        self.c = CarreJoueur(10,10,30,30)
+        self.c = CarreJoueur(20,10,40,30)
 
         #create canvas
         self.create_canvas()

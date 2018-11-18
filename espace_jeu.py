@@ -24,6 +24,8 @@ class EspaceJeu:
         for line in self.tab_line:
             x1, y1, x2, y2 = line
             canvas.create_line(x1, y1, x2, y2, fill="black", width=3)
+        self.draw_start_end(canvas)
 
     def draw_start_end(self, canvas):
-        pass
+        canvas.create_rectangle(10,10,50,50, fill="yellow")
+        canvas.create_rectangle(600,400,650,450, fill="green")
