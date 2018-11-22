@@ -24,13 +24,14 @@ GAME_WIN = "Bingo!\nVous avaz gagné"
 class Game:
     
     def __init__(self, tab_enemy=[]):
+        self.flag = False
+        self.t = None
+        self.all_id_widget = list()
         self.tab_enemy = tab_enemy
         self.creer_game_window()
         self.creer_canvas_game()
         self.creer_boutons_options()
         self.afficher_texte_sur_canvas(TITRE_GAME)
-        self.flag = False
-    
     
     def creer_game_window(self):
         self.root = Tk()
@@ -61,17 +62,26 @@ class Game:
     def afficher_texte_sur_canvas(self, texte):
         self.can.delete("all")
         f = tkFont.Font(size=30,family=FONT, weight="bold")
-        self.can.create_text(350,200,text=texte, fill=COLOR_BLACK, activefill=COLOR_YELLOW, font=f, justify="center")
-    
+        id = self.can.create_text(350,200,text=texte, fill=COLOR_BLACK, activefill=COLOR_YELLOW, font=f, justify="center")
+        self.all_id_widget.append(id)
+
     def start(self):
-        self.can.delete("all")
+        self.clean()
         self.bouton_jouer['text'] = "Recommencer"
-        self.flag = True
         
         self.creer_espace_jeu()
         self.creer_coins()
         self.creer_joueur()
-        self.creer_ennemis()
+
+        if not self.flag:
+            self.creer_ennemis()
+            self.flag = True
+        else:
+            pass
+    
+    def clean(self):
+        for id in self.all_id_widget:
+            self.can.delete(id)
     
     def creer_espace_jeu(self):
         self.espace_jeu = EspaceJeu()
@@ -79,8 +89,9 @@ class Game:
 
     def creer_coins(self):
         self.coin = Coin("coins1.txt")        
-        self.coin.draw(self.can)
-        self.root.bind('<Key>', self.deplacer_joueur)
+        tab_id = self.coin.draw(self.can)
+        for id in tab_id:
+            self.all_id_widget.append(id)
     
     def deplacer_joueur(self, a):
         if a.keysym == 'Down':
@@ -98,16 +109,19 @@ class Game:
     
     def creer_joueur(self):
         self.c = CarreJoueur(20,20,40,40)
-        self.c.draw(self.can)
+        id = self.c.draw(self.can)
+        self.all_id_widget.append(id)
+        self.root.bind('<Key>', self.deplacer_joueur)
     
     def creer_ennemis(self):
         for e in self.tab_enemy:
-            e.draw(self.can)
-        t = Thread(target=self.deplacer_ennemis)
-        t.start()
+            id = e.draw(self.can)
+        self.t = Thread(target=self.deplacer_ennemis)
+        self.t.daemon = True
+        self.t.start()
 
     def deplacer_ennemis(self):
-        while self.flag:
+        while True:
             for e in self.tab_enemy:
                 a, b, c = e.moving_around(700, HEIGHT)
                 try:
@@ -115,6 +129,7 @@ class Game:
                 except:
                     exit()
             time.sleep(0.025)
+        print("finished")
 
 
 # launch the game itself

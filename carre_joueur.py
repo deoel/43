@@ -44,4 +44,5 @@ class CarreJoueur:
         print(self.x0, self.y1, self.x1, self.y1)
 
     def draw(self, canvas):
-        canvas.create_rectangle(self.x0, self.y0, self.x1, self.y1, fill=self.couleur, tags=(self.tag))
+        id = canvas.create_rectangle(self.x0, self.y0, self.x1, self.y1, fill=self.couleur, tags=(self.tag))
+        return id

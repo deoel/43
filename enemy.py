@@ -26,6 +26,7 @@ class Enemy:
         return m
     
     def draw(self, canvas):
-        canvas.create_oval(self.posx, self.posy, self.w, self.h, fill=self.couleur, tags=(self.tag))
+        id = canvas.create_oval(self.posx, self.posy, self.w, self.h, fill=self.couleur, tags=(self.tag))
+        return id
 
     

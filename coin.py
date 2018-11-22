@@ -24,6 +24,9 @@ class Coin:
         self.tab_coins = all_coins
 
     def draw(self, canvas):
+        tab_id = list()
         for line in self.tab_coins:
             x, y= line
-            canvas.create_oval(x,y,x+15,y+15,fill=COLOR_YELLOW)
+            id = canvas.create_oval(x,y,x+15,y+15,fill=COLOR_YELLOW)
+            tab_id.append(id)
+        return tab_id
