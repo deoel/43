@@ -96,7 +96,7 @@ class GameWindow:
 if __name__ == '__main__':
     
     tab_enemy = list()
-    for i in range(1,15):
+    for i in range(1,16):
         x = random.randint(0, WIDTH)
         y = random.randint(0, HEIGHT)
         w = x + 20
