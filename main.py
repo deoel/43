@@ -28,6 +28,7 @@ class Game:
         self.flag = False
         self.t = None
         self.points = 0
+        self.game_over = False
         self.tab_id_coins = list()
         self.all_id_widget = list()
         self.tab_enemy = tab_enemy
@@ -63,8 +64,10 @@ class Game:
     # bingo game     : afficher "Bingo, vous avez gagné"
 
     def afficher_texte_sur_canvas(self, texte):
-        self.can.delete("all")
+        self.clean()
         f = tkFont.Font(size=30,family=FONT, weight="bold")
+        id = self.can.create_rectangle(0, 0, 700, HEIGHT, fill=BG, outline=COLOR_VIOLET)
+        self.all_id_widget.append(id)
         id = self.can.create_text(350,200,text=texte, fill=COLOR_BLACK, activefill=COLOR_YELLOW, font=f, justify="center")
         self.all_id_widget.append(id)
 
@@ -80,8 +83,9 @@ class Game:
         if not self.flag:
             self.creer_ennemis()
             self.flag = True
-        else:
-            pass
+        
+        if self.game_over:
+            self.game_over = False
     
     def clean(self):
         for id in self.all_id_widget:
@@ -127,16 +131,18 @@ class Game:
 
     def deplacer_ennemis(self):
         while True:
-            for e in self.tab_enemy:
-                a, b, c = e.moving_around(700, HEIGHT)
-                try:
-                    self.can.move(a, b, c)
-                    if self.collision_ennemi():
-                        self.afficher_texte_sur_canvas(GAME_OVER)
-                except:
-                    exit()
-            time.sleep(0.025)
-        print("finished")
+            if not self.game_over:
+                for e in self.tab_enemy:
+                    a, b, c = e.moving_around(700, HEIGHT)
+                    try:
+                        self.can.move(a, b, c)
+                        self.collision_ennemi()
+                    except:
+                        exit()
+                time.sleep(0.025)
+            else:
+                print("game_over")
+                continue
 
     def collision_coin(self):
         for c in self.coin.tab_coins:
@@ -154,7 +160,12 @@ class Game:
         pass
     
     def collision_ennemi(self):
-        return False
+        for e in self.tab_enemy:
+            coord_ennemi = Coord_XY_XY(e.x0, e.y0, e.x1, e.y1)
+            coord_joueur = Coord_XY_XY(self.c.x0, self.c.y0, self.c.x1, self.c.y1)
+            if coord_ennemi.collision(coord_joueur):
+                self.game_over = True
+                self.afficher_texte_sur_canvas(GAME_OVER)
 
 
 # launch the game itself
