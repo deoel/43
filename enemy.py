@@ -21,7 +21,9 @@ class Enemy:
         elif self.y0 <= 0:
             self.speedy *= (-1)
         self.x0 += self.speedx
+        self.x1 += self.speedx
         self.y0 += self.speedy
+        self.y1 += self.speedy
         m = (self.tag, self.speedx, self.speedy)
         return m
     
