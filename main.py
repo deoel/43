@@ -115,6 +115,7 @@ class Game:
         elif a.keysym == "Right":
             a, b, c = self.c.go_right()
             self.can.move(a, b, c)
+        self.win()
     
     def creer_joueur(self, x0=20, y0=20, x1=40, y1=40):
         self.c = CarreJoueur(x0,y0,x1,y1)
@@ -141,7 +142,6 @@ class Game:
                         exit()
                 time.sleep(0.025)
             else:
-                print("game_over")
                 continue
 
     def collision_coin(self):
@@ -166,7 +166,13 @@ class Game:
             if coord_ennemi.collision(coord_joueur):
                 self.game_over = True
                 self.afficher_texte_sur_canvas(GAME_OVER)
-
+    
+    def win(self):
+        coord_fin = Coord_XY_XY(600,400,650,450)
+        coord_joueur = Coord_XY_XY(self.c.x0, self.c.y0, self.c.x1, self.c.y1)
+        if coord_fin.in_limite(coord_joueur):
+            self.game_over = True
+            self.afficher_texte_sur_canvas(GAME_WIN)
 
 # launch the game itself
 if __name__ == '__main__':   
