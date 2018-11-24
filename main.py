@@ -5,6 +5,7 @@ from enemy import Enemy
 from espace_jeu import EspaceJeu
 from coin import Coin
 from carre_joueur import CarreJoueur
+from coord_xy_xy import Coord_XY_XY
 from threading import Thread
 import time, random
 
@@ -26,6 +27,8 @@ class Game:
     def __init__(self, tab_enemy=[]):
         self.flag = False
         self.t = None
+        self.points = 0
+        self.tab_id_coins = list()
         self.all_id_widget = list()
         self.tab_enemy = tab_enemy
         self.creer_game_window()
@@ -67,6 +70,7 @@ class Game:
 
     def start(self):
         self.clean()
+        self.score['text'] = "Score : 0"
         self.bouton_jouer['text'] = "Recommencer"
         
         self.creer_espace_jeu()
@@ -89,11 +93,12 @@ class Game:
 
     def creer_coins(self):
         self.coin = Coin("coins1.txt")        
-        tab_id = self.coin.draw(self.can)
-        for id in tab_id:
+        self.tab_id_coins = self.coin.draw(self.can)
+        for id in self.tab_id_coins:
             self.all_id_widget.append(id)
     
     def deplacer_joueur(self, a):
+        self.collision_coin()
         if a.keysym == 'Down':
             a, b, c = self.c.go_down()
             self.can.move(a, b, c)
@@ -107,15 +112,15 @@ class Game:
             a, b, c = self.c.go_right()
             self.can.move(a, b, c)
     
-    def creer_joueur(self):
-        self.c = CarreJoueur(20,20,40,40)
+    def creer_joueur(self, x0=20, y0=20, x1=40, y1=40):
+        self.c = CarreJoueur(x0,y0,x1,y1)
         id = self.c.draw(self.can)
         self.all_id_widget.append(id)
         self.root.bind('<Key>', self.deplacer_joueur)
     
     def creer_ennemis(self):
         for e in self.tab_enemy:
-            id = e.draw(self.can)
+            e.draw(self.can)
         self.t = Thread(target=self.deplacer_ennemis)
         self.t.daemon = True
         self.t.start()
@@ -126,10 +131,30 @@ class Game:
                 a, b, c = e.moving_around(700, HEIGHT)
                 try:
                     self.can.move(a, b, c)
+                    if self.collision_ennemi():
+                        self.afficher_texte_sur_canvas(GAME_OVER)
                 except:
                     exit()
             time.sleep(0.025)
         print("finished")
+
+    def collision_coin(self):
+        for c in self.coin.tab_coins:
+            x0, y0, x1, y1 = c[0], c[1], c[0]+15, c[1]+15
+            coord_coin = Coord_XY_XY(x0,y0, x1, y1)
+            coord_joueur = Coord_XY_XY(self.c.x0, self.c.y0, self.c.x1, self.c.y1)
+            if coord_coin.collision(coord_joueur):
+                self.points += 10
+                self.score['text'] = "Score : %d" %(self.points)
+                id = self.can.create_oval(x0,y0, x1, y1, outline=COLOR_VIOLET, fill=COLOR_VIOLET)
+                self.all_id_widget.append(id)
+                self.creer_joueur(self.c.x0, self.c.y0, self.c.x1, self.c.y1)
+
+    def collision_mur(self):
+        pass
+    
+    def collision_ennemi(self):
+        return False
 
 
 # launch the game itself
