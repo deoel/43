@@ -6,6 +6,7 @@ from espace_jeu import EspaceJeu
 from coin import Coin
 from carre_joueur import CarreJoueur
 from coord_xy_xy import Coord_XY_XY
+from bloc_mur import BlocMur
 from threading import Thread
 import time, random
 
@@ -74,6 +75,7 @@ class Game:
     def start(self):
         self.clean()
         self.score['text'] = "Score : 0"
+        self.points = 0
         self.bouton_jouer['text'] = "Recommencer"
         
         self.creer_espace_jeu()
@@ -92,6 +94,8 @@ class Game:
             self.can.delete(id)
     
     def creer_espace_jeu(self):
+        self.bloc_mur = BlocMur("bloc_mur1.txt")
+        #self.bloc_mur.draw(self.can)
         self.espace_jeu = EspaceJeu()
         self.espace_jeu.draw(self.can)
 
@@ -105,16 +109,28 @@ class Game:
         self.collision_coin()
         if a.keysym == 'Down':
             a, b, c = self.c.go_down()
-            self.can.move(a, b, c)
+            if self.collision_mur():
+                self.c.go_up()
+            else:
+                self.can.move(a, b, c)
         elif a.keysym == "Up":
             a, b, c = self.c.go_up()
-            self.can.move(a, b, c)
+            if self.collision_mur():
+                self.c.go_down()
+            else:
+                self.can.move(a, b, c)
         elif a.keysym == "Left":
             a, b, c = self.c.go_left()
-            self.can.move(a, b, c)
+            if self.collision_mur():
+                self.c.go_right()
+            else:
+                self.can.move(a, b, c)
         elif a.keysym == "Right":
             a, b, c = self.c.go_right()
-            self.can.move(a, b, c)
+            if self.collision_mur():
+                self.c.go_left()
+            else:
+                self.can.move(a, b, c)
         self.win()
     
     def creer_joueur(self, x0=20, y0=20, x1=40, y1=40):
@@ -140,7 +156,7 @@ class Game:
                         self.collision_ennemi()
                     except:
                         exit()
-                time.sleep(0.025)
+                time.sleep(0.015)
             else:
                 continue
 
@@ -157,7 +173,13 @@ class Game:
                 self.creer_joueur(self.c.x0, self.c.y0, self.c.x1, self.c.y1)
 
     def collision_mur(self):
-        pass
+        for bm in self.bloc_mur.tab_bloc_mur:
+            x0, y0, x1, y1 = bm
+            coord_bloc_mur = Coord_XY_XY(x0, y0, x1, y1)
+            coord_joueur = Coord_XY_XY(self.c.x0, self.c.y0, self.c.x1, self.c.y1)
+            if coord_bloc_mur.in_limite(coord_joueur):
+                return False
+        return True
     
     def collision_ennemi(self):
         for e in self.tab_enemy:
