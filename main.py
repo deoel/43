@@ -95,7 +95,7 @@ class Game:
     
     def creer_espace_jeu(self):
         self.bloc_mur = BlocMur("bloc_mur1.txt")
-        #self.bloc_mur.draw(self.can)
+        self.bloc_mur.draw(self.can)
         self.espace_jeu = EspaceJeu()
         self.espace_jeu.draw(self.can)
 
@@ -205,7 +205,7 @@ if __name__ == '__main__':
         y0 = 100 * i
         x1 = x0 + 20
         y1 = y0 + 20
-        e = Enemy(x0, y0, x1, y1, 5, 0, "enemy"+str(i))
+        e = Enemy(x0, y0, x1, y1, 5, 5, "enemy"+str(i))
         tab_enemy.append(e)
     j = 1
     for i in range(5,10):
