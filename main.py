@@ -25,7 +25,8 @@ GAME_WIN = "Bingo!\nVous avaz gagné"
 
 class Game:
     
-    def __init__(self, tab_enemy=[]):
+    def __init__(self, tab_enemy=None):
+        tab_enemy = [] if tab_enemy is None else tab_enemy
         self.flag = False
         self.t = None
         self.points = 0
